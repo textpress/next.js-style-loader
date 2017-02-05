@@ -13,7 +13,7 @@
   "scripts": {
     "build": "npm run clean && babel src --out-dir .",
     "clean": "rimraf *.js",
-    "lint": "eslint '{*.js,src/**/*.js,test/**/*.js}' --ignore-pattern=test/coverage",
+    "lint": "eslint '{src/**/*.js,test/**/*.js}' --ignore-pattern=test/coverage",
     "prepublish": "npm run lint && npm run build",
     "test": "npm run lint",
     "watch": "npm run build && chokidar 'src/**/*' 'package.json' '.babelrc' -c 'npm run build' --verbose"
