@@ -110,7 +110,7 @@ function applyStylesOnClient(styles) {
 
                         setTimeout(function () {
                             var headEl = document.head || document.getElementsByTagName('head')[0];
-                            var styleEl = document.getElById(ssrStyleElId);
+                            var styleEl = document.getElementById(ssrStyleElId);
 
                             styleEl && headEl.removeChild(styleEl);
                         }, removeSsrStyleElDelay);
