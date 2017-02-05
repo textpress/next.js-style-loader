@@ -1,4 +1,4 @@
-# next-style
+# next-style-loader
 
 [![NPM version][npm-image]][npm-url] [![Downloads][downloads-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency status][david-dm-image]][david-dm-url] [![Dev Dependency status][david-dm-dev-image]][david-dm-dev-url]
 
@@ -19,7 +19,7 @@ This project is similar to what webpack `style-loader` does but is compatible wi
 
 ## Installation
 
-`$ npm install --save next-style-loader`
+`$ npm install --save-dev next-style-loader`
 
 
 ## Setup
