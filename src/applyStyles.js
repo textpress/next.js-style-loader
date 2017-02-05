@@ -55,7 +55,7 @@ function applyStylesOnClient(styles) {
 
                     setTimeout(() => {
                         const headEl = document.head || document.getElementsByTagName('head')[0];
-                        const styleEl = document.getElById(ssrStyleElId);
+                        const styleEl = document.getElementById(ssrStyleElId);
 
                         styleEl && headEl.removeChild(styleEl);
                     }, removeSsrStyleElDelay);
