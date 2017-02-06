@@ -103,7 +103,7 @@ import styles from './MyComponent.css';
 
 const MyComponent extends Component {
     render() {
-        return '<div>Hello</div>';
+        return <div>Hello</div>;
     }
 }
 

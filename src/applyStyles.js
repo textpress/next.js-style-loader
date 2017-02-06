@@ -57,7 +57,7 @@ export default function applyStyles(styles) {
             _willMountOnClient() {
                 // Insert component styles using style-loader's addStyles which does the hard work for us
                 const styleLoaderStyles = styles.reduce((arr, style) => {
-                    style._nextStyles.forEach((style) => arr.push([style.id, style.content, style.mediaType, style.sourceMap]));
+                    style._nextStyles.forEach((style) => arr.push([style.id, style.content, '', style.sourceMap]));
                     return arr;
                 }, []);
 

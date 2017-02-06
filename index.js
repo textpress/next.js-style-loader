@@ -10,7 +10,7 @@ var _path2 = _interopRequireDefault(_path);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function loader(content) {
+function loader(content, sourceMap) {
     var _this = this;
 
     this.cacheable && this.cacheable();
@@ -20,7 +20,7 @@ function loader(content) {
         content = this.exec(content, this.resource);
         // Otherwise it's a css string
     } else {
-        content = [[this.resourcePath, content, '']];
+        content = [[this.resourcePath, content, '', sourceMap]];
     }
 
     // Preserve CSS modules locals
@@ -33,8 +33,7 @@ function loader(content) {
         return {
             id: (0, _loaderUtils.getHashDigest)(relativePath, 'md5', 'hex'),
             content: entry[1],
-            sourceMap: entry[3],
-            mediaType: entry[2]
+            sourceMap: entry[3]
         };
     });
 

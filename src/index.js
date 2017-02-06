@@ -5,7 +5,7 @@
 import { getHashDigest } from 'loader-utils';
 import path from 'path';
 
-function loader(content) {
+function loader(content, sourceMap) {
     this.cacheable && this.cacheable();
 
     // Grab the content from the css-loader
@@ -13,7 +13,7 @@ function loader(content) {
         content = this.exec(content, this.resource);
     // Otherwise it's a css string
     } else {
-        content = [[this.resourcePath, content, '']];
+        content = [[this.resourcePath, content, '', sourceMap]];
     }
 
     // Preserve CSS modules locals
@@ -27,7 +27,6 @@ function loader(content) {
             id: getHashDigest(relativePath, 'md5', 'hex'),
             content: entry[1],
             sourceMap: entry[3],
-            mediaType: entry[2],
         };
     });
 
