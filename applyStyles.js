@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+exports.default = applyStyles;
 exports.flush = flush;
 
 var _react = require('react');
@@ -34,8 +35,10 @@ var ssrStyleElId = 'next-style-ssr';
 var isServer = typeof window === 'undefined';
 
 var serverStyles = !isServer ? null : [];
+var removedSsrStyleEl = isServer ? null : false;
+var removeSsrStyleElDelay = isServer ? null : 1000;
 
-function applyStylesOnServer(styles) {
+function applyStyles(styles) {
     styles = Array.isArray(styles) ? styles : [styles];
 
     return function (WrappedComponent) {
@@ -51,70 +54,28 @@ function applyStylesOnServer(styles) {
             _createClass(ApplyStyles, [{
                 key: 'componentWillMount',
                 value: function componentWillMount() {
-                    var _serverStyles;
-
-                    // Concatenate styles
-                    (_serverStyles = serverStyles).push.apply(_serverStyles, _toConsumableArray(styles));
-                }
-            }, {
-                key: 'render',
-                value: function render() {
-                    return _react2.default.createElement(WrappedComponent, this.props);
-                }
-            }]);
-
-            return ApplyStyles;
-        }(_react.Component);
-
-        var displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
-
-        ApplyStyles.displayName = 'ApplyStyles(' + displayName + ')';
-        ApplyStyles.ComposedComponent = WrappedComponent;
-
-        return (0, _hoistNonReactStatics2.default)(ApplyStyles, WrappedComponent);
-    };
-}
-
-// ---------------------------------------------------
-
-var removedSsrStyleEl = isServer ? null : false;
-var removeSsrStyleElDelay = isServer ? null : 1000;
-
-function applyStylesOnClient(styles) {
-    styles = Array.isArray(styles) ? styles : [styles];
-
-    return function (WrappedComponent) {
-        var ApplyStyles = function (_Component2) {
-            _inherits(ApplyStyles, _Component2);
-
-            function ApplyStyles() {
-                _classCallCheck(this, ApplyStyles);
-
-                return _possibleConstructorReturn(this, (ApplyStyles.__proto__ || Object.getPrototypeOf(ApplyStyles)).apply(this, arguments));
-            }
-
-            _createClass(ApplyStyles, [{
-                key: 'componentWillMount',
-                value: function componentWillMount() {
-                    // Insert component styles
-                    this._updateNextStyles = (0, _addStyles2.default)(styles.map(function (style) {
-                        return [style.id, style.content, '', style.sourceMap];
-                    }));
+                    if (isServer) {
+                        this._willMountOnServer();
+                    } else {
+                        this._willMountOnClient();
+                    }
                 }
             }, {
                 key: 'componentDidMount',
                 value: function componentDidMount() {
                     // Remove the server-rendered style tag
-                    if (!removedSsrStyleEl) {
-                        removedSsrStyleEl = true;
-
-                        setTimeout(function () {
-                            var headEl = document.head || document.getElementsByTagName('head')[0];
-                            var styleEl = document.getElementById(ssrStyleElId);
-
-                            styleEl && headEl.removeChild(styleEl);
-                        }, removeSsrStyleElDelay);
+                    if (removedSsrStyleEl) {
+                        return;
                     }
+
+                    removedSsrStyleEl = true;
+
+                    setTimeout(function () {
+                        var headEl = document.head || document.getElementsByTagName('head')[0];
+                        var styleEl = document.getElementById(ssrStyleElId);
+
+                        styleEl && headEl.removeChild(styleEl);
+                    }, removeSsrStyleElDelay);
                 }
             }, {
                 key: 'componentWillUnmount',
@@ -127,6 +88,30 @@ function applyStylesOnClient(styles) {
                 value: function render() {
                     return _react2.default.createElement(WrappedComponent, this.props);
                 }
+            }, {
+                key: '_willMountOnServer',
+                value: function _willMountOnServer() {
+                    // Concatenate server styles so that they are flushed afterwards
+                    styles.forEach(function (style) {
+                        var _serverStyles;
+
+                        return (_serverStyles = serverStyles).push.apply(_serverStyles, _toConsumableArray(style._nextStyles));
+                    });
+                }
+            }, {
+                key: '_willMountOnClient',
+                value: function _willMountOnClient() {
+                    // Insert component styles using style-loader's addStyles which does the hard work for us
+                    var styleLoaderStyles = styles.reduce(function (arr, style) {
+                        style._nextStyles.forEach(function (style) {
+                            return arr.push([style.id, style.content, style.mediaType, style.sourceMap]);
+                        });
+                        return arr;
+                    }, []);
+
+                    this._updateNextStyles = (0, _addStyles2.default)(styleLoaderStyles, {
+                        fixUrls: true });
+                }
             }]);
 
             return ApplyStyles;
@@ -141,26 +126,20 @@ function applyStylesOnClient(styles) {
     };
 }
 
-// ---------------------------------------------------
-
-exports.default = isServer ? applyStylesOnServer : applyStylesOnClient;
 function flush() {
     if (!isServer) {
         throw new Error('flush() should only be called on the server');
     }
 
     var flushedStyles = serverStyles;
+    var flushedCss = serverStyles.reduce(function (concatenated, style) {
+        return concatenated + style.content;
+    }, '');
 
     serverStyles = [];
 
     return {
-        tag: _react2.default.createElement(
-            'style',
-            { id: ssrStyleElId },
-            flushedStyles.reduce(function (concatenated, style) {
-                return concatenated + style.content;
-            }, '')
-        ),
+        tag: _react2.default.createElement('style', { id: ssrStyleElId, dangerouslySetInnerHTML: { __html: flushedCss } }),
         styles: flushedStyles
     };
 }

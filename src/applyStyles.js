@@ -8,58 +8,36 @@ const ssrStyleElId = 'next-style-ssr';
 const isServer = typeof window === 'undefined';
 
 let serverStyles = !isServer ? null : [];
-
-function applyStylesOnServer(styles) {
-    styles = Array.isArray(styles) ? styles : [styles];
-
-    return (WrappedComponent) => {
-        class ApplyStyles extends Component {
-            componentWillMount() {
-                // Concatenate styles
-                serverStyles.push(...styles);
-            }
-
-            render() {
-                return <WrappedComponent { ...this.props } />;
-            }
-        }
-
-        const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
-
-        ApplyStyles.displayName = `ApplyStyles(${displayName})`;
-        ApplyStyles.ComposedComponent = WrappedComponent;
-
-        return hoistStatics(ApplyStyles, WrappedComponent);
-    };
-}
-
-// ---------------------------------------------------
-
 let removedSsrStyleEl = isServer ? null : false;
 const removeSsrStyleElDelay = isServer ? null : 1000;
 
-function applyStylesOnClient(styles) {
+export default function applyStyles(styles) {
     styles = Array.isArray(styles) ? styles : [styles];
 
     return (WrappedComponent) => {
         class ApplyStyles extends Component {
             componentWillMount() {
-                // Insert component styles
-                this._updateNextStyles = addStyles(styles.map((style) => [style.id, style.content, '', style.sourceMap]));
+                if (isServer) {
+                    this._willMountOnServer();
+                } else {
+                    this._willMountOnClient();
+                }
             }
 
             componentDidMount() {
                 // Remove the server-rendered style tag
-                if (!removedSsrStyleEl) {
-                    removedSsrStyleEl = true;
-
-                    setTimeout(() => {
-                        const headEl = document.head || document.getElementsByTagName('head')[0];
-                        const styleEl = document.getElementById(ssrStyleElId);
-
-                        styleEl && headEl.removeChild(styleEl);
-                    }, removeSsrStyleElDelay);
+                if (removedSsrStyleEl) {
+                    return;
                 }
+
+                removedSsrStyleEl = true;
+
+                setTimeout(() => {
+                    const headEl = document.head || document.getElementsByTagName('head')[0];
+                    const styleEl = document.getElementById(ssrStyleElId);
+
+                    styleEl && headEl.removeChild(styleEl);
+                }, removeSsrStyleElDelay);
             }
 
             componentWillUnmount() {
@@ -70,6 +48,23 @@ function applyStylesOnClient(styles) {
             render() {
                 return <WrappedComponent { ...this.props } />;
             }
+
+            _willMountOnServer() {
+                // Concatenate server styles so that they are flushed afterwards
+                styles.forEach((style) => serverStyles.push(...style._nextStyles));
+            }
+
+            _willMountOnClient() {
+                // Insert component styles using style-loader's addStyles which does the hard work for us
+                const styleLoaderStyles = styles.reduce((arr, style) => {
+                    style._nextStyles.forEach((style) => arr.push([style.id, style.content, style.mediaType, style.sourceMap]));
+                    return arr;
+                }, []);
+
+                this._updateNextStyles = addStyles(styleLoaderStyles, {
+                    fixUrls: true,  // We are using a style-loader fork to fix urls, see: https://github.com/webpack-contrib/style-loader/pull/124
+                });
+            }
         }
 
         const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
@@ -81,21 +76,18 @@ function applyStylesOnClient(styles) {
     };
 }
 
-// ---------------------------------------------------
-
-export default isServer ? applyStylesOnServer : applyStylesOnClient;
-
 export function flush() {
     if (!isServer) {
         throw new Error('flush() should only be called on the server');
     }
 
     const flushedStyles = serverStyles;
+    const flushedCss = serverStyles.reduce((concatenated, style) => concatenated + style.content, '');
 
     serverStyles = [];
 
     return {
-        tag: <style id={ ssrStyleElId }>{ flushedStyles.reduce((concatenated, style) => concatenated + style.content, '') }</style>,
+        tag: <style id={ ssrStyleElId } dangerouslySetInnerHTML={ { __html: flushedCss } }/>,
         styles: flushedStyles,
     };
 }
