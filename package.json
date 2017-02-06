@@ -41,6 +41,6 @@
     "hoist-non-react-statics": "^1.2.0",
     "loader-utils": "^0.2.16",
     "react": "^15.4.2",
-    "style-loader": "git+ssh://git@github.com/bendytree/style-loader.git"
+    "style-loader": "git://github.com/bendytree/style-loader.git"
   }
 }
