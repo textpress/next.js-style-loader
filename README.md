@@ -99,6 +99,9 @@ After setting the project, you may import CSS files like so:
 ```js
 import styles from './MyComponent.css';
 
+// If you are using `css-loader` with CSS modules,
+// `styles` would be an object containing the generated classnames
+
 const MyComponent extends Component {
     render() {
         return <div>Hello</div>;
