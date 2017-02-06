@@ -62,11 +62,7 @@ module.exports = {
 Finally, create a `pages/_document.js` file:
 
 ```js
-import React from 'react';
-import Document, { Head, Main, NextScript } from 'next/document';
-import { flush } from 'next-style-loader/applyStyles';
-
-export default class MyDocument extends Document {
+class MyDocument extends Document {
     render() {
         const { nextStyle } = this.props;
 
@@ -91,6 +87,8 @@ MyDocument.getInitialProps = function (ctx) {
 
     return props;
 };
+
+export default MyDocument;
 ```
 
 
