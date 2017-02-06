@@ -12,9 +12,9 @@
 [david-dm-dev-url]:https://david-dm.org/moxystudio/next.js-style-loader#info=devDependencies
 [david-dm-dev-image]:https://img.shields.io/david/dev/moxystudio/next.js-style-loader.svg
 
-Makes loading of CSS files possibles in [next.js](https://github.com/zeit/next.js) projects through babel & webpack.
+Makes loading of CSS files possible in [next.js](https://github.com/zeit/next.js) projects through babel & webpack.
 
-This project is similar to what webpack `style-loader` does but is compatible with `next.js`.
+This project is similar to what webpack `style-loader` does but it's compatible with `next.js`.
 
 
 ## Installation
