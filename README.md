@@ -39,9 +39,9 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                // Simplest way (non-minified)..
+                // Simplest example (non-minified)..
                 loader: `babel-loader!next-style-loader`,
-                // Use `css-loader` to minify and enable source maps
+                // Example with `css-loader` to minify css
                 // NOTE: The `url` option from the css loader must be disabled; images, fonts, etc should go into /static
                 loader: `babel-loader!next-style-loader!css-loader?sourceMap&minimize=${!dev}&url=false`,
                 // Same as above but with CSS modules
