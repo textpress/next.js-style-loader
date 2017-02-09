@@ -33,4 +33,4 @@ function loader(content, sourceMap) {
     return `module.exports = ${JSON.stringify(out)};`;
 }
 
-module.exports = loader;
+export default loader;
