@@ -16,7 +16,7 @@
 
 Makes loading of CSS files possible in [next.js](https://github.com/zeit/next.js) projects through babel & webpack.
 
-This project is similar to what webpack `style-loader` does but it's compatible with `next.js`.
+This module is similar to what webpack `style-loader` does but it's compatible with `next.js`.
 
 
 ## Installation
