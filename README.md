@@ -52,7 +52,7 @@ module.exports = {
                 // Enable `postcss-imports` plugin must be enabled in the `postcss.config.js` file to process @import declarations
                 loader: `babel-loader!next-style-loader!css-loader?sourceMap&minimize=${!dev}&url=false!postcss-loader`,
                 // Example with `css-loader` and `sass-loader'
-                loader: 'babel-loader!next-style-loader!css-loader?sourceMap&minimize=${!dev}&url=false!sass-loader',
+                loader: `babel-loader!next-style-loader!css-loader?sourceMap&minimize=${!dev}&url=false!sass-loader`,
             }
         );
 
