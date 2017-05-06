@@ -9,7 +9,7 @@
 [travis-image]:http://img.shields.io/travis/moxystudio/next.js-style-loader/master.svg
 [david-dm-url]:https://david-dm.org/moxystudio/next.js-style-loader
 [david-dm-image]:https://img.shields.io/david/moxystudio/next.js-style-loader.svg
-[david-dm-dev-url]:https://david-dm.org/moxystudio/next.js-style-loader#info=devDependencies
+[david-dm-dev-url]:https://david-dm.org/moxystudio/next.js-style-loader?type=dev
 [david-dm-dev-image]:https://img.shields.io/david/dev/moxystudio/next.js-style-loader.svg
 
 **This module is deprecated and is no longer maintained. We have moved to our own [boilerplate](https://github.com/moxystudio/react-with-moxy).**
