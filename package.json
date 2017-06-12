@@ -21,7 +21,7 @@
   "author": "André Cruz <andre@moxy.studio>",
   "homepage": "https://github.com/moxystudio/next-style",
   "bugs": "https://github.com/moxystudio/next-style/issues",
-  "repository": "git@github.com:moxystudio/next-style.git",
+  "repository": "git@github.com:moxystudio/next.js-style-loader.git",
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
